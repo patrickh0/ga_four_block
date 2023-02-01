@@ -23,6 +23,7 @@ For anyone moving to GA4 from GA360, this represents a shift in scope. GA360 exp
 Each row in the event tables is a record of one event. There are several standard columns: event_date, event_timestamp, event_name, user_pseudo_id, for a full list of fields exported by default, see https://support.google.com/firebase/answer/7029846. In addition to single-value fields, there are nested fields as well.
 
 The simpler nested fields can be referenced with dot-notation sql definitions, as shown in this example of the “ECommerce Purchase Revenue” dimension:
+````  
   dimension: ecommerce__purchase_revenue {
     type: number
     sql: ${TABLE}.ecommerce.purchase_revenue ;;
@@ -30,10 +31,12 @@ The simpler nested fields can be referenced with dot-notation sql definitions, a
     group_item_label: "Purchase Revenue"
     value_format_name: usd
   }
+````  
 Here, “purchase_revenue” is an element of the ecommerce field.
 
 However, Some elements within GA4 are packaged as repeating key/value pairs such as the “event_params” field:
 
+````
 `event_params:[
   {
     "value": {
@@ -60,7 +63,7 @@ However, Some elements within GA4 are packaged as repeating key/value pairs such
     "key": "ga_session_id"
   }
 ]`
-
+````
 The structure for each element in this array is essentially:
 
 KEY
@@ -79,38 +82,38 @@ Many desired metrics will be focused on session-level behavior. To facilitate th
 # Sessionization
 The core component of the GA4 Block is the sessions.view file. This file contains the derived table that groups the event rows into session rows. This is started by identifying and isolating the session-level key (referred to throughout the block as “sl_key”). The four components of this sl_key are:
 
-Session Date
+**Session Date**
 The session date is extracted directly from the table name, using the BigQuery “_TABLE_SUFFIX” function which becomes available when the table source for the query includes a wildcard. (For example: select * from events_* would query across all tables that begin with “events_”. In this scenario, you can also select all or portions of the table name to be displayed in the results as a populated column). Because of this, sessions in which events span multiple days will be counted as one session in each day. This is an inherited behavior from existing processes: If a session crosses a day boundary (e.g. if it starts at 11:55 pm and ends at 12:05 am), it is considered a single session, though it is counted once for each day. (https://support.google.com/analytics/answer/9191807)
 
-GA Session ID
+**GA Session ID**
 This session identifier is used in conjunction with the user ID (user_pseudo_id by default) and the GA Session Number to uniquely identify a session. The GA Session ID by itself may not be unique.
 
-GA Session Number
+**GA Session Number**
 This number indicates the session frequency of a particular user. Each user’s first visit will be 1..
 
-User Pseudo ID
+**User Pseudo ID**
 This is the default User Identification value populated in GA4.
 
 This ‘sl_key’, along with its components and all columns from the source event row, are grouped within a CTE titled “session_list_with_event_history” alongside several calculations:
 
-Event Rank
+**Event Rank**
 This is a rank function (no duplicate values) ordered by event_timestamp. Each event will have a rank > 0.
 
-Time To Next Event
+**Time To Next Event**
 This is a timestamp_difference function between the event_timestamp of the following event and the event_timestamp of the current event.
 
-Page View Rank
+**Page View Rank**
 This is a rank function exclusively of ‘page_view’ events ordered by event_timestamp. Each ‘page_view’ event will have a rank > 0. Non ‘page_view’ events will have a rank of 0.
 
-Page View Reverse Rank
+**Page View Reverse Rank**
 Similar to the Page View Rank, however ordered by descending event_timestamp.
 
-Time To Next Page
+**Time To Next Page**
 This timestamp_difference function will only get elapsed time between the present ‘page_view’ event and the following ‘page_view’ event. If a session only has one ‘page_view’ event, this value will be 0.
 
 The results of the “session_list_with_event_history” CTE are then utilized for the following processes:
 
-“Session_facts” CTE:
+**“Session_facts” CTE:**
 - Session Event Count - A count of all events in a given session (grouped by sl_key).
 - Session Page View Count - A count of all “page_view” events in a given session (grouped by sl_key).
 - Engaged Events - A count of all events identified as ‘Engaged’, an event_parameter (grouped by sl_key).
@@ -118,17 +121,17 @@ The results of the “session_list_with_event_history” CTE are then utilized f
 - Is First Visit Session? - A boolean (yes/no) value indicating if the session contains a ‘first_visit’ event, indicative of a first visit session.
 - Session Length Minutes - A timestamp_difference function between the first event_timestamp in a session and the last event_timestamp in a session. Sessions with a singular event_timestamp (even with multiple events) will have a value of 0.
 
-“Session Tags” CTE:
+**“Session Tags” CTE:**
 The purpose of this CTE is to extract session-specific tags for Medium, Source, Campaign, and Page Referrer values. These values follow the “Last Non-Direct Click” method of attribution. For the purposes of this block, the “traffic_source” column present in the source event tables was not used. The “traffic_source” values are set on a user’s initial visit to a site or application, and these values can persist beyond the scope of a single session.
 - Medium
 - Source
 - Campaign
 - Page Referrer
 
-“DeviceGeo” CTE:
+**“DeviceGeo” CTE:**
 The device and geographic metadata of a session are being extracted from the “session_start” event.
 
-“Session Event Packing” CTE:
+**“Session Event Packing” CTE:**
 This process takes the original row output of “session_list_with_event_history” and condenses it into one row per session, with all the event history of the session nested into an array. This is used later for efficient unnesting of elements without needing to re-group events into sessions at the time of the query. The output is the sl_key, its components, and a nested field called “event_data”.
 
 The final select statement in this derived table combines the elements of each process into one row for each session that contains:
@@ -148,7 +151,7 @@ The output of this SQL query is stored as an incremental persistent derived tabl
 
 The initial build of this table will generate a SQL query inserting “1=1”, running across all event tables present in the target dataset. Subsequent runs will insert appropriate “WHERE” syntax to limit the results to the date range specified by the “increment_offset” value.
 
-NOTE: This process of incrementally storing session-data will effectively duplicate the volume of data being exported by GA4. It is important to be aware of the increase in storage; however, this also increases your ability to perform analytics.
+**NOTE**: This process of incrementally storing session-data will effectively duplicate the volume of data being exported by GA4. It is important to be aware of the increase in storage; however, this also increases your ability to perform analytics.
 
 # Looker Model and Views
 File Structure
@@ -165,7 +168,7 @@ The components of the GA4 Block are isolated into folders for the file type/purp
 
 ## Model File
 ### Views
-“sessions.view”
+**“sessions.view”**
 This is the base view of the sessions explore of the GA4 model. While GA4 is event based, the data has been sessionized to mimic the analytics available in GA360.   This was done with a SQL derived table, and the majority of dimensions  defined are direct references to output of the query. Some fields of note are:
 
 - Audience Selector. This parameter is used in conjunction with the “Audience Trait” dimension, to dynamically update the content delivered on a report.
@@ -175,7 +178,7 @@ This is the base view of the sessions explore of the GA4 model. While GA4 is eve
 - Session Data Is Bounce?. “Bounce” is not a value present in the GA4 data. This determination is using session length, as all “single page view” sessions will also have a 0 session duration, fulfilling the requirements of traditional bounce determinations.
 - GA4 BQML Fields. These three fields are used when generating the BQML purchase propensity model. By default, the prediction_window_days parameter value is set on the predictions.view file where needed. These fields are commented out by default (See BQML under Notes).
 
-“events.view”
+**“events.view”**
 The events view brings together the event level data defined in the various event_data_dimensions views.  Additionally event-level dimensions and measures are defined in this view.
 
 As the event data is a representation of the original source rows from your events_* tables, there are a mixture of single-value fields and simple nested fields, as well as  repeating key/value fields available within the unnested event_data fields. The single-value fields and simple nested fields are defined within this “events.view” file. The repeating key/value fields for the event parameters have been defined in “event_data_event_params.view”, and the repeating key/value fields for the user properties have been defined in “event_data_user_properties.view”. Both “event_data_event_params.view” and “event_data_user_properties.view” are extended into events.view.
@@ -203,7 +206,7 @@ Using this method of sub-selecting allows a single row to return for an event wi
 
 This is desired on some data, such as the nested ITEMS records. In the case of ITEMS, each nested record is a unique ITEM from the user's purchase, and expanding these into new rows makes sense for filtering and accurate aggregate measures.  However, for the purposes of analysis at the event-level, we want one row with columns representing all of these possible keys.
 
-“event_data_event_params.view”
+**“event_data_event_params.view”**
 Each event parameter you enable on GA4 will need to have a new dimension and any applicable measures created. The dimensions included in this block correspond to the list of automatically tracked events listed here https://support.google.com/analytics/answer/9234069?hl=en.
 
 If you are initiating the block with a large amount of custom event parameters already in place, it may be beneficial to obtain a list of them along with the value types that are populated:
@@ -211,6 +214,7 @@ If you are initiating the block with a large amount of custom event parameters a
 
 Sample Query for obtaining a list of all event parameter keys and their respective values:
 
+ ````
  SELECT  ep.key
  , case when count(value.string_value) > 0 then true else false end as string_value_populated
  , case when count(value.int_value) > 0 then true else false end as int_value_populated
@@ -220,19 +224,19 @@ Sample Query for obtaining a list of all event parameter keys and their respecti
  , UNNEST(event_params) ep
  group by 1
  order by 1 asc
-
-“event_data_user_properties.view”
+ ````
+**“event_data_user_properties.view”**
 Similar to the event parameters, user properties are likely to include custom attributes or tags.
 
-“goals.view”
+**“goals.view”**
 This file is to facilitate the creation of custom cohorts for analysis, based on any data available. It is another view file that is extended into “events.view”, and not directly referenced in the model file. By default, the goals are centered around the event name and the “page” value for that event. It is expected that these default goal points will be customized or expanded on with the addition of custom events and/or event parameters. Instructions on how to add new goals, or new variables to filter on in the goal dashboard, are provided in the view file.
 
-“page_data.view”
+**“page_data.view”**
 Another file that is extended into “events.view”, and not referenced in the model directly. Page Data takes advantage of the ‘page_view_rank’ and ‘reverse_page_view_rank’ fields inserted during the initial CTE of the sessions table. These fields allow for analysis of ‘page_view’ events within a session without the need for another derived table.
 
 Similar to how the landing and exit pages are obtained at the session-level, we are able to query within the scope of the session from within the unnested element. For example we can obtain the 3rd page view in a session with this dimension:
 
-
+````
   dimension: page_path_3 {
     view_label: "Page Flow"
     group_label: "Page Path"
@@ -243,6 +247,7 @@ Similar to how the landing and exit pages are obtained at the session-level, we 
     where event_history.page_view_rank = 3
     and event_history.event_name = "page_view" limit 1) ;;
   }
+ ```` 
 
 If we look at the sql here, and remove the regular expression elements, this is what is occurring:
 The sessions table is linked to the events table on the model on the SL_KEY.
@@ -252,15 +257,15 @@ The process of looking “up” at the parent field, re-unnesting, and returning
 
 This series of sub-selects defines the page flow, relative path, and relative reverse path of ‘page_view’ events. These have been defined up to 9 iterations (9 Path Dimensions, 9 Relative Path Dimensions, 9 Relative Reverse Path Dimensions), but there is no limit. Additional length to the path can be added by adjusting the iteration on the sql definition of the desired field.
 
-“event_path.view”
+**“event_path.view”**
 The event_path.view file is structured similarly to the “page_data.view” file, with an emphasis on event_rank instead of page_view_rank. Functionally the definition of the dimensions are the same, and this view is likewise extended into “events.view” instead of being referenced directly in the model.
 
-“page_funnel.view”
+**“page_funnel.view”**
 The Page Funnel view is extended into “sessions.view”. The dimensions and measures defined here are purpose-built for use with a Page View Funnel/Flow. The same extraction of pages by rank as was used in “page_data.view” is utilized here, with definitions up to 6 pages present by default.
 
 The “tag” dimensions are what qualifies subsequent page views for inclusion in the resultset. If you filter for a value on Page 1, any subsequent page views that do not follow a qualifying “Page 1” event will be excluded from the measures defined in this view. This process repeats for all subsequently filtered page ranks (up to 6). This can be seen in the difference between the page_1_tag dimension and page_6_tag:
 
-
+````
   dimension: page_1_tag {
     ...
     sql: case when {% condition page_1_filter %} ${page_1} {% endcondition %}
@@ -277,8 +282,9 @@ The “tag” dimensions are what qualifies subsequent page views for inclusion 
                and ${page_1} is not null and ${page_2} is not null and ${page_3} is not null
      and ${page_4} is not null and ${page_5} is not null and ${page_6} is not null
      then 1 else 0 end ;;  }
+````
 
-“event_funnel.view”
+**“event_funnel.view”**
 The event_funnel view is set up similarly to “page_funnel.view”, and is extended into “sessions.view” instead of being referenced in the model. As with the page_funnel, you can easily add/remove further iterations to the funnel by adding new dimensions with incrementing event_rank references. Due to the nature of the event data populated in GA4, it is possible for several (3 or more) events to fire with the exact same timestamp. For example: When a new user visits a site, they will generate “First Visit”, “Session Start”, and “Page View” events with identical event_timestamps. Due to this, the practicality of this funnel is limited without enhancing the event being pulled to include additional event parameters. Instead of “event_name”, another calculated dimension [such as “Full Event”] could be used, or additional filters to exclude events outside of the scope of the request could be added to increase the utility of this view.
 
 ## Customizations
