@@ -312,6 +312,7 @@ The Custom Goal Conversions by default are only focused on Event Type and Page N
 * The initial run of the Incremental Persistent Derived Table will execute with a where clause of "WHERE 1=1". This will query all historical data in your GA4 Dataset across all date-partitioned tables. If you do not wish to have all historical data, you can add a hard date filter to the where clause within the "session\_list\_with\_event\_history" cte on sessions.view's derived table definition.
 * If you are utilizing user\_id instead of user\_pseudo\_id, you will need to replace references to the user\_pseudo\_id with user\_id in the derived key ("sl\_key") definition in sessions.view's derived table definition, and in the user-centric measure definitions.
 * BQML Customer Purchase Propensity Score: This block includes a demonstration of utilizing GA4 data to train a BQML customer purchase propensity score. To ease implementation costs, this has been commented-out by default. To implement this feature, uncomment the BQML View Files and BQML Fields on the sessions.view file.
+* For GA360 Users migrating to GA4: Not all fields are the same as in the UI due to GA4's integration of mobile apps. The Incremental Persistent Derived Table will help you navigate through the fields you are already familiarized with.
 
 ## Coming Soon
 1. Leverage advanced analytics to be able to predict which customers are likely to make another purchase in the future based off of their historical actions.
