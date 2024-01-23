@@ -1,14 +1,16 @@
 connection: "@{GA4_CONNECTION}"
 
 
-label: "Google Analytics 4 Beta"
+
+label: "Google Analytics 4"
+
 
 include: "/dashboards/*.dashboard"
 include: "/explores/*.explore.lkml"
 include: "/views/**/*.view.lkml"
 
 datagroup: ga4_main_datagroup {
-  sql_trigger:  SELECT CURDATE();;
+  sql_trigger:  SELECT CURRENT_DATE();;
   max_cache_age: "2 hours"
 }
 

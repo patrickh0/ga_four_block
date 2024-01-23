@@ -1,4 +1,5 @@
-project_name: "ga4_block"
+project_name: "ga_four"
+
 
 ## Connection Constants:
 constant: GA4_CONNECTION {
@@ -15,6 +16,12 @@ constant: GA4_TABLE_VARIABLE {
   value: "events_*"
   export: override_optional
 }
+
+constant: EVENT_COUNT {
+  value: "5000"
+  export: override_optional
+}
+
 
 constant: GA4_BQML_train_months {
   value: "12"
