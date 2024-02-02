@@ -17,7 +17,7 @@
     height: 4
   - title: Sessions
     name: Sessions
-    model: ga4
+    model: 
     explore: sessions
     type: single_value
     fields: [sessions.total_sessions, sessions.total_first_visit_sessions_percentage]
@@ -1130,7 +1130,7 @@
     height: 6
   - title: Languages (Top 10)
     name: Languages (Top 10)
-    model: ga4_t
+    model: ga4
     explore: sessions
     type: looker_column
     fields: [sessions.total_sessions, sessions.device_data_language]
