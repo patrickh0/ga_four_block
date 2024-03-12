@@ -7,7 +7,7 @@ marketplace_ref: {
   listing: "ga4"
   version: "2.0.8"
   models: ["ga4"]
-  override_constant: GA4_CONNECTION { value:"" }
+  override_constant: GA4_CONNECTION { value:"patrick_argolis_test" }
   override_constant: GA4_SCHEMA { value:"ga4_export" }
   override_constant: GA4_TABLE_VARIABLE { value:"events_*" }
   override_constant: EVENT_COUNT { value:"" }
