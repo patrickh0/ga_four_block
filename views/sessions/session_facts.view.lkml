@@ -1,8 +1,9 @@
-include: "/views/sessions/session_list_with_event_history.view.lkml"
+include: "/views/sessions/*.view.lkml"
 view: session_facts{
   derived_table: {
-    datagroup_trigger: ga4_main_datagroup
-    sql: select sl.sl_key
+   #datagroup_trigger: ga4_main_datagroup
+  sql_trigger_value: ${session_tags.SQL_TABLE_NAME} ;;
+    sql: select sl.sl_key as sl_key
       ,  COUNT(sl.event_timestamp) session_event_count
       ,  SUM(case when sl.event_name = 'page_view' then 1 else 0 end) session_page_view_count
       ,  COALESCE(SUM((select value.int_value from UNNEST(sl.event_params) where key = "engaged_session_event")),0) engaged_events
