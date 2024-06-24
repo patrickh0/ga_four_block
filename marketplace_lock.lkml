@@ -5,10 +5,9 @@
 
 marketplace_ref: {
   listing: "ga4"
-  version: "3.0.0"
+  version: "3.0.1"
   models: ["ga4"]
   override_constant: GA4_CONNECTION { value:"looker-private-demo" }
   override_constant: GA4_SCHEMA { value:"ga4_export" }
   override_constant: GA4_TABLE_VARIABLE { value:"events_*" }
-  override_constant: EVENT_COUNT { value:"" }
 }
