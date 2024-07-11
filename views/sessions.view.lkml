@@ -89,6 +89,7 @@ left join ${session_facts.SQL_TABLE_NAME} as sf
 left join ${device_geo.SQL_TABLE_NAME} as d
   on  se.sl_key = d.sl_key
 where {% incrementcondition %} se.session_date {%  endincrementcondition %}
+group by 1,2,3,4,5
    ;;
   }
 
