@@ -53,7 +53,34 @@ select se.session_date as session_date
                       ,  d.geo__metro
                       ,  d.geo__sub_continent
                       ,  d.geo__region) geo_data
-    ,  se.event_data event_data
+    ,  (SELECT AS  STRUCT se.sl_key
+                          , se.event_rank
+                          , se.page_view_rank
+                          , se.page_view_reverse_rank
+                          , se.time_to_next_event
+                          , se.time_to_next_page
+                          , se.event_date
+                          , se.event_timestamp
+                          , se.event_name
+                          , se.event_params
+                          , se.event_previous_timestamp
+                          , se.event_value_in_usd
+                          , se.event_bundle_sequence_id
+                          , se.event_server_timestamp_offset
+                          , se.user_id
+                          , se.user_pseudo_id
+                          , se.user_properties
+                          , se.user_first_touch_timestamp
+                          , se.user_ltv
+                          , se.device
+                          , se.geo
+                          , se.app_info
+                          , se.traffic_source
+                          , se.stream_id
+                          , se.platform
+                          , se.event_dimensions
+                          , se.ecommerce
+                          , se.items))) se.event_data event_data
 from ${session_event_packing.SQL_TABLE_NAME} as se
 left join ${session_tags.SQL_TABLE_NAME} as sa
   on  se.sl_key = sa.sl_key
