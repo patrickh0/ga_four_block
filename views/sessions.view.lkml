@@ -12,7 +12,7 @@ view: sessions {
     increment_offset: 3
     sql:
 -- Final Select Statement:
-select select se.session_date as session_date
+select se.session_date as session_date
     ,  se.ga_session_id as ga_session_id
     ,  se.ga_session_number as ga_session_number
     ,  se.user_pseudo_id as user_pseudo_id
@@ -53,7 +53,7 @@ select select se.session_date as session_date
                       ,  d.geo__metro
                       ,  d.geo__sub_continent
                       ,  d.geo__region) geo_data
-    ,  (SELECT  AS STRUCT se.sl_key
+    ,  (SELECT AS STRUCT se.sl_key
                           , se.event_rank
                           , se.page_view_rank
                           , se.page_view_reverse_rank
