@@ -12,7 +12,7 @@ view: sessions {
     increment_offset: 3
     sql:
 -- Final Select Statement:
-select se.session_date as session_date
+select select se.session_date as session_date
     ,  se.ga_session_id as ga_session_id
     ,  se.ga_session_number as ga_session_number
     ,  se.user_pseudo_id as user_pseudo_id
@@ -53,7 +53,7 @@ select se.session_date as session_date
                       ,  d.geo__metro
                       ,  d.geo__sub_continent
                       ,  d.geo__region) geo_data
-    ,  (SELECT ARRAY_AGG(STRUCT se.sl_key
+    ,  (SELECT  AS STRUCT se.sl_key
                           , se.event_rank
                           , se.page_view_rank
                           , se.page_view_reverse_rank
@@ -80,7 +80,7 @@ select se.session_date as session_date
                           , se.platform
                           , se.event_dimensions
                           , se.ecommerce
-                          , se.items)) se.event_data event_data
+                          , se.items) as event_data
 from ${session_event_packing.SQL_TABLE_NAME} as se
 left join ${session_tags.SQL_TABLE_NAME} as sa
   on  se.sl_key = sa.sl_key

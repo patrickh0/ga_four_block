@@ -31,7 +31,6 @@ view: session_event_packing {
                           , sl.event_bundle_sequence_id
                           , sl.event_server_timestamp_offset
                           , sl.user_id
-                          , sl.user_pseudo_id
                           , sl.user_properties
                           , sl.user_first_touch_timestamp
                           , sl.user_ltv
