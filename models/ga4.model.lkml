@@ -21,4 +21,5 @@ datagroup: ga4_attribution_channel {
   sql_trigger: SELECT 1 ;;
 }
 
+
 persist_with: ga4_main_datagroup

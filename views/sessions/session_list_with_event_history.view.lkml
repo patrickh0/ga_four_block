@@ -1,6 +1,11 @@
 include: "/views/event_data_dimensions/event_funnel.view"
 include: "/views/event_data_dimensions/page_funnel.view"
-
+###########################
+# 01: SESSION LIST WITH EVENT HISTORY
+# This is the backbone of the block.
+# In this query, we parse the date from the table name
+# And sessionalize all the events with the sl_key
+############################
 view: session_list_with_event_history {
   derived_table: {
     datagroup_trigger: ga4_main_datagroup
@@ -57,5 +62,10 @@ view: session_list_with_event_history {
     type: date
     hidden: yes
     sql: ${TABLE}.session_date;;
+  }
+  parameter: bqm_enabled {
+    type: unquoted
+    default_value: "@{BQML_PARAMETER}"
+
   }
   }

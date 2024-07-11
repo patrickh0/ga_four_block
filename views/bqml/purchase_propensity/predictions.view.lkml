@@ -6,7 +6,7 @@ include: "/views/sessions/*.view"
 
 view: future_purchase_model {
   derived_table: {
-    sql_trigger_value: ${future_input.SQL_TABLE_NAME} ;;
+    sql_trigger_value: CASE WHEN @{BQML_PARAMETER}='Yes' AND ${future_input.SQL_TABLE_NAME} THEN TRUE ELSE FALSE END  ;;
     sql_create:
       CREATE OR REPLACE MODEL ${SQL_TABLE_NAME}
       OPTIONS(
@@ -41,10 +41,12 @@ explore: feature_importance {hidden:yes}
 # VIEWS:
 view: future_purchase_model_evaluation {
   derived_table: {
-    sql_trigger_value: ${future_purchase_model.SQL_TABLE_NAME} ;;
-    sql: SELECT * FROM ml.EVALUATE(
+    sql_trigger_value: CASE WHEN @{BQML_PARAMETER}='Yes' AND ${future_purchase_model.SQL_TABLE_NAME} THEN TRUE ELSE FALSE END ;;
+    sql:
+          SELECT * FROM ml.EVALUATE(
           MODEL ${future_purchase_model.SQL_TABLE_NAME},
-          (SELECT * FROM ${testing_input.SQL_TABLE_NAME}));;
+          (SELECT * FROM ${testing_input.SQL_TABLE_NAME}))
+;;
   }
   dimension: recall {type: number value_format_name:percent_2}
   dimension: accuracy {type: number value_format_name:percent_2}
@@ -55,8 +57,9 @@ view: future_purchase_model_evaluation {
 
 view: roc_curve {
   derived_table: {
-    sql_trigger_value: ${future_purchase_model.SQL_TABLE_NAME} ;;
-    sql: SELECT * FROM ml.ROC_CURVE(
+    sql_trigger_value: CASE WHEN @{BQML_PARAMETER}='Yes' AND ${future_purchase_model.SQL_TABLE_NAME} THEN TRUE ELSE FALSE END  ;;
+    sql:
+    SELECT * FROM ml.ROC_CURVE(
         MODEL ${future_purchase_model.SQL_TABLE_NAME},
         (SELECT * FROM ${testing_input.SQL_TABLE_NAME}));;
   }
@@ -101,8 +104,9 @@ view: roc_curve {
 
 view: confusion_matrix {
   derived_table: {
-    sql_trigger_value: ${future_purchase_model.SQL_TABLE_NAME} ;;
-    sql: SELECT Expected_label,_0 as Predicted_0,_1 as Predicted_1  FROM ml.confusion_matrix(
+    sql_trigger_value: CASE WHEN @{BQML_PARAMETER}='Yes' AND ${future_purchase_model.SQL_TABLE_NAME} THEN TRUE ELSE FALSE END ;;
+    sql:
+    SELECT Expected_label,_0 as Predicted_0,_1 as Predicted_1  FROM ml.confusion_matrix(
         MODEL ${future_purchase_model.SQL_TABLE_NAME},
         (SELECT * FROM ${testing_input.SQL_TABLE_NAME}));;
   }
@@ -113,8 +117,9 @@ view: confusion_matrix {
 
 view: future_purchase_model_training_info {
   derived_table: {
-    sql_trigger_value: ${future_purchase_model.SQL_TABLE_NAME} ;;
-    sql: SELECT  * FROM ml.TRAINING_INFO(MODEL ${future_purchase_model.SQL_TABLE_NAME});;
+    sql_trigger_value: CASE WHEN @{BQML_PARAMETER}='Yes' AND ${future_purchase_model.SQL_TABLE_NAME} THEN TRUE ELSE FALSE END  ;;
+    sql:
+    SELECT  * FROM ml.TRAINING_INFO(MODEL ${future_purchase_model.SQL_TABLE_NAME});;
   }
   dimension: training_run {type: number}
   dimension: iteration {type: number}
@@ -146,8 +151,9 @@ view: future_purchase_model_training_info {
 
 view: feature_importance {
   derived_table: {
-    sql_trigger_value: ${future_purchase_model.SQL_TABLE_NAME} ;;
-    sql: SELECT
+    sql_trigger_value: CASE WHEN @{BQML_PARAMETER}='Yes' AND ${future_purchase_model.SQL_TABLE_NAME} THEN TRUE ELSE FALSE END  ;;
+    sql:
+    SELECT
       *
     FROM
       ML.GLOBAL_EXPLAIN(MODEL ${future_purchase_model.SQL_TABLE_NAME});;
@@ -160,8 +166,9 @@ view: feature_importance {
 explore:  future_purchase_prediction {hidden:yes}
 view: future_purchase_prediction {
   derived_table: {
-    sql_trigger_value: ${future_purchase_model.SQL_TABLE_NAME} ;;
-    sql: select
+    sql_trigger_value: CASE WHEN @{BQML_PARAMETER}='Yes' AND ${future_purchase_model.SQL_TABLE_NAME} THEN TRUE ELSE FALSE END ;;
+    sql:
+    select
           pred.*,
           predicted_will_purchase_in_future_probs_unnest.prob as pred_probability from
           (SELECT * FROM ml.PREDICT(

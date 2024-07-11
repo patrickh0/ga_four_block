@@ -1,4 +1,10 @@
 include: "/views/sessions/*.view.lkml"
+###########################
+# 03: SESSION FACTS
+# This PDT gets basic facts for the session like when it started,
+# how many pages it viewed, and the length in minutes.
+# Primary Key is always sl_key
+############################
 view: session_facts{
   derived_table: {
    #datagroup_trigger: ga4_main_datagroup

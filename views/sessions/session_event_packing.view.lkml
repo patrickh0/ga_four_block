@@ -1,4 +1,10 @@
 include: "/views/sessions/*.view.lkml"
+###########################
+# 04: SESSION EVENT PACKING
+# In this query we get all of the items that
+# were nested and aggregate them into one. This is then used in the events table.
+#
+############################
 view: session_event_packing {
   derived_table:{
     sql_trigger_value: ${session_facts.SQL_TABLE_NAME} ;;

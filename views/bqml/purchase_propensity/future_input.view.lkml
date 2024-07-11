@@ -212,6 +212,6 @@ view: future_input {
       SELECT
         * EXCEPT(will_purchase_in_future)
       FROM
-        user_model);;
+      CASE WHEN @{BQML_PARAMETER}='Yes' THEN user_model ELSE (SELECT 1,"1" as will_purchase_in_future) END;;
   }
 }

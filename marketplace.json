@@ -20,6 +20,10 @@
         "label": "Event Count Limit"
     }
   },
+    "BQML_PARAMETER": {
+        "label": "BQML Models Included"
+    }
+  },
   "models": [
     {
       "name": "ga4",

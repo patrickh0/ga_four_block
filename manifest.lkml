@@ -2,7 +2,7 @@ project_name: "ga_four"
 
 ## Connection Constants:
 constant: GA4_CONNECTION {
-  value: ""
+  value: "bq-looker-marketplace"
   export: override_required
 }
 
@@ -22,6 +22,10 @@ constant: EVENT_COUNT {
 constant: model_step_prediction {
   value: "60"
   #export: override_optional
+}
+constant: BQML_PARAMETER {
+  value: "Yes"
+  export: override_optional
 }
 
 constant: GA4_BQML_train_months {

@@ -1,7 +1,8 @@
 view: training_input_arima {
   derived_table: {
     sql_trigger_value: ${incremental_prediction.SQL_TABLE_NAME} ;;
-    sql:SELECT
+    sql:
+    SELECT
     (DATE(TIMESTAMP_MICROS(events.event_timestamp) )) AS sessions_session_date,
     events.event_name  AS events_event_name,
     COUNT(DISTINCT sessions.sl_key ) AS sum_of_session_event_count

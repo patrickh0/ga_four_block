@@ -210,6 +210,6 @@ view: testing_input {
       SELECT
         *
       FROM
-        user_model);;
+      CASE WHEN @{BQML_PARAMETER}='Yes' THEN user_model ELSE (SELECT 1) END;;
   }
 }

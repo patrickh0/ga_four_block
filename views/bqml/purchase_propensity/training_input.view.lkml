@@ -2,6 +2,7 @@ include: "/views/sessions/*.view.lkml"
 include: "/views/*/*.view.lkml"
 view: training_input {
   derived_table: {
+
     #datagroup_trigger: bqml_datagroup
     sql_trigger_value: ${sessions.SQL_TABLE_NAME} ;;
     sql:
@@ -211,6 +212,6 @@ view: training_input {
       SELECT
         *
       FROM
-        user_model;;
+      CASE WHEN @{BQML_PARAMETER}='Yes' THEN user_model ELSE (SELECT 1) END;;
   }
 }

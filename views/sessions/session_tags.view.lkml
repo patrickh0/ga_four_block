@@ -1,4 +1,11 @@
 include: "/views/sessions/*.view.lkml"
+###########################
+# 02: SESSION TAGS
+# This is the backbone of the block.
+# In this PDT we tag all users by medium,
+# source, campaign, and page referrer.
+# A user once tagged, it won't change.
+############################
 view: session_tags{
   derived_table:{
     increment_key: "session_date"

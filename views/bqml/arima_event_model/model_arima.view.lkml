@@ -4,7 +4,8 @@ view: model_arima {
   #extension: required
   derived_table: {
     sql_trigger_value: ${training_input_arima.SQL_TABLE_NAME};;
-    sql_create: CREATE OR REPLACE MODEL ${SQL_TABLE_NAME}
+    sql_create:
+    CREATE OR REPLACE MODEL ${SQL_TABLE_NAME}
       OPTIONS(
         MODEL_TYPE='ARIMA_PLUS',
         time_series_timestamp_col='sessions_session_date',
@@ -12,7 +13,8 @@ view: model_arima {
         time_series_id_col='events_event_name',
         auto_arima=true) AS
     SELECT *
-    FROM ${training_input_arima.SQL_TABLE_NAME};;
+    FROM ${training_input_arima.SQL_TABLE_NAME}
+;;
   }
   dimension: ts {
     type: string
@@ -35,7 +37,9 @@ view: model_arima {
   #explore: forecasting {}
   view: optimal_model_coeff{
     derived_table: {
-      sql: SELECT * FROM ML.ARIMA_COEFFICIENTS(MODEL ${model_arima.SQL_TABLE_NAME});;
+      sql:
+      SELECT * FROM ML.ARIMA_COEFFICIENTS(MODEL ${model_arima.SQL_TABLE_NAME})
+;;
     }
     dimension: ar_coefficients {type:number sql:${TABLE}.ar_coefficients;;}
     dimension: ma_coefficients {type:number sql:${TABLE}.ma_coefficients;;}
@@ -43,7 +47,9 @@ view: model_arima {
   }
   view: model_evaluation {
     derived_table: {
-      sql:  SELECT * FROM ML.ARIMA_EVALUATE(MODEL ${model_arima.SQL_TABLE_NAME});;
+      sql:
+      SELECT * FROM ML.ARIMA_EVALUATE(MODEL ${model_arima.SQL_TABLE_NAME})
+;;
     }
     dimension: events_event_name {type:string sql:${TABLE}.events_event_name ;;}
     dimension: has_drift {type:string sql:${TABLE}.has_drift ;;}
