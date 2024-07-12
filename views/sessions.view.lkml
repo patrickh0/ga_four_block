@@ -80,7 +80,7 @@ select se.session_date as session_date
                           , se.platform
                           , se.event_dimensions
                           , se.ecommerce
-                          , se.items)) as event_data
+                          , se.items) as event_data
 from ${session_event_packing.SQL_TABLE_NAME} as se
 left join ${session_tags.SQL_TABLE_NAME} as sa
   on  se.sl_key = sa.sl_key
