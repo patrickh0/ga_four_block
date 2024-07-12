@@ -191,7 +191,7 @@ extends: [event_funnel, page_funnel]
     group_label: "Pages"
     description: "Landing/Entrance Page (first 'Page View' event) of a Session."
     sql: (select coalesce(regexp_extract((select value.string_value from UNNEST(event_params) where key = "page_location"),r"(?:.*?[\.][^\/]*)([\/][^\?]+)"),'/')
-          from UNNEST(sessions.event_data) as event_history
+          from sessions.event_data as event_history
           where event_history.sl_key = (sessions.sl_key) and event_history.page_view_rank = 1 limit 1) ;;
   }
   dimension: exit_page {
@@ -200,7 +200,7 @@ extends: [event_funnel, page_funnel]
     description: "Exit Page (last 'Page View' event) of a Session."
 
     sql: (select coalesce(regexp_extract((select value.string_value from UNNEST(event_params) where key = "page_location"),r"(?:.*?[\.][^\/]*)([\/][^\?]+)"),'/')
-          from UNNEST(sessions.event_data) as event_history
+          from sessions.event_data as event_history
           where event_history.sl_key = (sessions.sl_key) and event_history.page_view_reverse_rank = 1 limit 1) ;;
   }
 
