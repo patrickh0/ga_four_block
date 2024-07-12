@@ -17,7 +17,7 @@ view: session_event_packing {
           , sl.ga_session_number ga_session_number
           , sl.user_pseudo_id user_pseudo_id
           , sl.sl_key
-          , ARRAY_AGG(STRUCT(
+          , ARRAY_AGG(STRUCT(sl_key,
                           event_rank,
                           page_view_rank,
                           page_view_reverse_rank,
@@ -48,7 +48,7 @@ view: session_event_packing {
 FROM ${session_list_with_event_history.SQL_TABLE_NAME} AS sl
 WHERE sl.sl_key IN (SELECT sl_key FROM ${session_facts.SQL_TABLE_NAME}
   WHERE CASE WHEN "@{EVENT_COUNT}" = "" THEN 1=1 WHEN "@{EVENT_COUNT}" != "" THEN
-    session_event_count< SAFE_CAST("@{EVENT_COUNT}" AS INT64) END) AND  event_name IS NOT NULL
+    session_event_count< SAFE_CAST("@{EVENT_COUNT}" AS INT64) END) AND event_name IS NOT NULL
 AND {% incrementcondition %} session_date {% endincrementcondition %}
 GROUP BY 1,2,3,4,5;;
   }
