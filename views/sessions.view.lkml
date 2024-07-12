@@ -53,7 +53,7 @@ select se.session_date as session_date
                       ,  d.geo__metro
                       ,  d.geo__sub_continent
                       ,  d.geo__region) geo_data
-    ,  (SELECT ARRAY_AGG(se.event_data) FROM ${session_event_packing.SQL_TABLE_NAME} sr) event_data
+    ,se.event_data
 from ${session_event_packing.SQL_TABLE_NAME} as se
 left join ${session_tags.SQL_TABLE_NAME} as sa
   on  se.sl_key = sa.sl_key
