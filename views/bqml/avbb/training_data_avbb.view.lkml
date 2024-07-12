@@ -15,7 +15,7 @@ view: training_data_avbb {
     SUM(session_data.session_page_view_count) as session_count,
     COALESCE(SUM(event_data[SAFE_OFFSET(0)].user_ltv.revenue),0.0) as label
     FROM ${sessions.SQL_TABLE_NAME}  as sessions
-    LEFT JOIN sessions.event_data as events with offset as event_row GROUP BY 1,2,3,4,5,6,7;;
+    LEFT JOIN UNNEST(sessions.event_data) as events with offset as event_row GROUP BY 1,2,3,4,5,6,7;;
   }
   dimension: sl_key {
     hidden: yes
