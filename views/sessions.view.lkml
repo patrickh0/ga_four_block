@@ -53,7 +53,7 @@ select se.session_date as session_date
                       ,  d.geo__metro
                       ,  d.geo__sub_continent
                       ,  d.geo__region) geo_data
-    ,  (SELECT AS STRUCT se.sl_key
+    ,  (ARRAY_AGG(STRUCT( se.sl_key
                           , se.event_rank
                           , se.page_view_rank
                           , se.page_view_reverse_rank
@@ -80,7 +80,7 @@ select se.session_date as session_date
                           , se.platform
                           , se.event_dimensions
                           , se.ecommerce
-                          , se.items) as event_data
+                          , se.items))) as event_data
 from ${session_event_packing.SQL_TABLE_NAME} as se
 left join ${session_tags.SQL_TABLE_NAME} as sa
   on  se.sl_key = sa.sl_key
