@@ -15,7 +15,7 @@ explore: sessions {
 
   join: events {
     view_label: "Events"
-    sql: LEFT JOIN UNNEST(${sessions.event_data}) as events with offset as event_row ;;
+    sql: LEFT JOIN ${sessions.event_data} as events with offset as event_row ;;
     relationship: one_to_many
   }
 
