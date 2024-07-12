@@ -53,7 +53,7 @@ select se.session_date as session_date
                       ,  d.geo__metro
                       ,  d.geo__sub_continent
                       ,  d.geo__region) geo_data
-    ,  (ARRAY_AGG(STRUCT( se.sl_key
+    ,  (SELECT AS STRUCT se.sl_key
                           , se.event_rank
                           , se.page_view_rank
                           , se.page_view_reverse_rank
@@ -80,7 +80,7 @@ select se.session_date as session_date
                           , se.platform
                           , se.event_dimensions
                           , se.ecommerce
-                          , se.items))) as event_data
+                          , se.items)) as event_data
 from ${session_event_packing.SQL_TABLE_NAME} as se
 left join ${session_tags.SQL_TABLE_NAME} as sa
   on  se.sl_key = sa.sl_key
@@ -88,8 +88,7 @@ left join ${session_facts.SQL_TABLE_NAME} as sf
   on  se.sl_key = sf.sl_key
 left join ${device_geo.SQL_TABLE_NAME} as d
   on  se.sl_key = d.sl_key
-where {% incrementcondition %} se.session_date {%  endincrementcondition %}
-   group by 1,2,3,4,5;;
+where {% incrementcondition %} se.session_date {%  endincrementcondition %};;
   }
 
 extends: [event_funnel, page_funnel]
@@ -159,7 +158,7 @@ extends: [event_funnel, page_funnel]
   dimension: event_data {
     hidden: yes
     type: string
-    sql: ${TABLE}.event_data ;;
+    sql: ARRAY_AGG(${TABLE}.event_data) ;;
     ## This is the parent array that contains the event_data struct elements. It is not directly useably as a dimension.
     ## It is necessary for proper unnesting in the model Join.
   }
