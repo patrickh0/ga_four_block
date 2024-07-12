@@ -158,8 +158,7 @@ extends: [event_funnel, page_funnel]
   dimension: event_data {
     hidden: yes
     type: string
-    sql: WITH t1 AS(SELECT ARRAY_AGG(${TABLE}.event_data) as event_data)
-    SELECT event_data FROM t1;;
+    sql:ARRAY_AGG(${TABLE}.event_data);;
     ## This is the parent array that contains the event_data struct elements. It is not directly useably as a dimension.
     ## It is necessary for proper unnesting in the model Join.
   }
