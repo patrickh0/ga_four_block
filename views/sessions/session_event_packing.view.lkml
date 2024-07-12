@@ -44,13 +44,13 @@ view: session_event_packing {
                           event_dimensions,
                           ecommerce,
                           items
-          )) OVER (PARTITION BY sl.sl_key ORDER BY sl.event_rank ASC) AS event_data
+          )) event_data
 FROM ${session_list_with_event_history.SQL_TABLE_NAME} AS sl
 WHERE sl.sl_key IN (SELECT sl_key FROM ${session_facts.SQL_TABLE_NAME}
   WHERE CASE WHEN "@{EVENT_COUNT}" = "" THEN 1=1 WHEN "@{EVENT_COUNT}" != "" THEN
-    session_event_count< SAFE_CAST("@{EVENT_COUNT}" AS INT64) END)
+    session_event_count< SAFE_CAST("@{EVENT_COUNT}" AS INT64) END) AND  event_name IS NOT NULL
 AND {% incrementcondition %} session_date {% endincrementcondition %}
-ORDER BY sl.sl_key;;
+GROUP BY 1,2,3,4,5;;
   }
   dimension: session_date{
     type: date
