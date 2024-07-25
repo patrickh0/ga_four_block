@@ -212,6 +212,6 @@ view: training_input {
       SELECT
         *
       FROM user_model
-      WHERE @{BQML_PARAMETER}='Yes' ;;
+      WHERE "@{BQML_PARAMETER}"='Yes' ;;
   }
 }

@@ -212,6 +212,6 @@ view: future_input {
       SELECT
         * EXCEPT(will_purchase_in_future)
       FROM user_model
-      WHERE @{BQML_PARAMETER}='Yes';;
+      WHERE "@{BQML_PARAMETER}"='Yes';;
   }
 }
