@@ -3,7 +3,6 @@ view: testing_input {
   derived_table: {
     sql_trigger_value: ${training_input.SQL_TABLE_NAME} ;;
     sql:
-    select * from
     (WITH
       visitors_labeled AS (
         SELECT
