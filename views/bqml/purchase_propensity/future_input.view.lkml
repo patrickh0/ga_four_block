@@ -5,7 +5,7 @@ view: future_input {
     # partition_keys: ["session_date"]
     #cluster_keys: ["session_date"]
     sql:
-    (WITH
+    WITH
       visitors_labeled AS (
         SELECT
           user_pseudo_id,
