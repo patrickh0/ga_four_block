@@ -3,7 +3,7 @@ view: testing_input {
   derived_table: {
     sql_trigger_value: ${training_input.SQL_TABLE_NAME} ;;
     sql:
-    (WITH
+    WITH
       visitors_labeled AS (
         SELECT
           user_pseudo_id,
