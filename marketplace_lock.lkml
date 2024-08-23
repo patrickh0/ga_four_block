@@ -8,7 +8,7 @@ marketplace_ref: {
   version: "3.0.1"
   models: ["ga4"]
   override_constant: GA4_CONNECTION { value:"argolis_connection" }
-  override_constant: GA4_SCHEMA { value:"GA4_Data" }
+  override_constant: GA4_SCHEMA { value:"ga4_data1" }
   override_constant: GA4_TABLE_VARIABLE { value:"events_*" }
   override_constant: EVENT_COUNT { value:"" }
 }
